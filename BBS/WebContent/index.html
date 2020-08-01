@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<TITLE>论坛</TITLE>
+<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<Link rel="stylesheet" type="text/css" href="style/style.css" />
+</HEAD>
+
+<BODY>
+
+<DIV>
+	<IMG src="image/logo.gif">
+</DIV>
+<!--      用户信息、登录、注册        -->
+
+<DIV class="h">
+    <span v-if="loginedUser.uname"> 欢迎{{loginedUser.uname}}</span>
+    <span v-else>您尚未　<a href="login.html">登录</a></span>
+	&nbsp;| &nbsp; <A href="reg.html">注册</A> |
+</DIV>
+<script type="text/javascript">
+var vue=new Vue({
+	el:".h",
+	data:{
+		loginedUser:{}
+	},
+	//事件钩子函数 当创建好vue对象之后，立即执行的代码
+	created:function(){
+		var url="GetLoginedUserServlet";
+		$.post(url,null,function(data){
+			//获取登录的用户名 服务器会返回null值，字符串值
+			if(data!=null){
+				vue.$data.loginedUser=JSON.parse(data);	
+			}
+		});
+	}
+});
+</script>
+<!--      主体        -->
+<DIV class="t">
+	<TABLE cellSpacing="0" cellPadding="0" width="100%">
+		<TR class="tr2" align="center">
+			<TD colSpan="2">论坛</TD>
+			<TD style="WIDTH: 10%;">主题</TD>
+			<TD style="WIDTH: 30%">最后发表</TD>
+		</TR>
+	<template v-for="b in list">
+	<!--       主版块       -->
+	<TR v-if="showParent(b.pname)" class="tr3">
+			<TD colspan="4">{{b.pname}}</TD>
+		</TR>
+		<!--       子版块       -->
+		<TR v-for="b in list" class="tr3">
+			<TD width="5%">&nbsp;</TD>
+			<TH align="left">
+				<IMG src="image/board.gif">
+				<!-- 当前版块链接 -->
+				<A v-bind:href="'list.html#'+b.boardid">{{b.bname}}</A>
+			</TH>
+			<TD align="center">{{b.cnt}}</TD>
+			<TH>
+				<SPAN>
+				<!-- 最新版块链接 -->
+					<A v-bind:href="'detail.html#'+b.topicid">{{b.title}}</A>
+				</SPAN>
+				<BR/>
+				<SPAN>{{b.uid}}</SPAN>
+				<SPAN class="gray">[{{b.publishtime}}]</SPAN>
+			</TH>
+		</TR>
+		</template>
+	</TABLE>
+</DIV>
+<script type="text/javascript">
+var currentBoardName=null;  //循环时当前的版块名
+		var vue2=new Vue({      //每个逗号表示一个对象
+			el:".t",  //将vue对象与dataTable进行绑定
+		    data:{
+		    	list:[]     //定义要展示的数组 js用[]表示
+		    },
+		    created:function(){
+		    	var url="IndexServlet";
+		    	$.get(url,null,function(json){   //匿名函数  json---/ListServlet?boardid=5里面的数据
+		    			vue2.$data.list=JSON.parse(json);  //将json字符串转成js对象(当前是数组) 最后赋值给vue的data中的list数组
+		    	});
+		    },
+		    methods:{
+		    	showParent(pname){
+		    		//如果当前的父版块等于currentBoardName 那就不用像是父版块
+		    		if(pname==currentBoardName){
+		    			return false;
+		    		}else{
+		    			//将当前父版块名称赋值给currentBoardName
+		    			currentBoardName=pname;
+		    			//返回true表示显示父版块
+		    			return true;
+		    		}
+		    	}
+		    }
+		});
+		</script>
+</BODY>
+</HTML>

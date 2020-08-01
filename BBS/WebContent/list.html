@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<TITLE>论坛--帖子列表</TITLE>
+<!-- 导入js文件 -->
+<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<Link rel="stylesheet" type="text/css" href="style/style.css" />
+</HEAD>
+
+<BODY>
+<DIV>
+	<IMG src="image/logo.gif">
+</DIV>
+<!--      用户信息、登录、注册        -->
+
+<DIV class="h">
+	您尚未　<a href="login.html">登录</a>
+	&nbsp;| &nbsp; <A href="reg.html">注册</A> |
+</DIV>
+
+
+<!--      主体        -->
+<DIV>
+<!--      导航        -->
+<br/>
+<DIV>
+	&gt;&gt;<B><a href="index.html">论坛首页</a></B>&gt;&gt;
+	<B><a href="list.html">灌水乐园</a></B>
+</DIV>
+<br/>
+<!--      新帖        -->
+	<DIV>
+		<A id="addTopic" href="topic.html"><IMG src="image/post.gif" name="td_post" border="0" id=td_post></A>
+	</DIV>
+<!--         翻 页         -->
+	<DIV>
+		<a href="list.html">上一页</a>|
+		<a href="list.html">下一页</a>
+	</DIV>
+
+	<DIV class="t">
+		<TABLE id="dataTable" cellSpacing="0" cellPadding="0" width="100%">		
+			<TR>
+				<TH class="h" style="WIDTH: 100%" colSpan="4"><SPAN>&nbsp;</SPAN></TH>
+			</TR>
+<!--       表 头           -->
+			<TR class="tr2">
+				<TD>&nbsp;</TD>
+				<TD style="WIDTH: 80%" align="center">文章</TD>
+				<TD style="WIDTH: 10%" align="center">作者</TD>
+				<TD style="WIDTH: 10%" align="center">回复</TD>
+			</TR>
+<!--         主 题 列 表        -->
+			
+			<TR v-for="t in list" class="tr3">
+				<TD><IMG src="image/topic.gif" border=0></TD>
+				<TD style="FONT-SIZE: 15px">
+					<A v-bind:href="'detail.html#'+t.topicid">{{t.title}}</A>
+				</TD>
+				<TD align="center">{{t.uid}}</TD>
+				<TD align="center">2</TD>
+			</TR>
+		</TABLE>
+		<!--js脚本标签 -->
+		<script type="text/javascript">
+		var vue=new Vue({      //每个逗号表示一个对象
+			el:"#dataTable",  //将vue对象与dataTable进行绑定
+		    data:{
+		    	list:[]     //定义要展示的数组 js用[]表示
+		    },
+		    created:function(){
+		    	//js中有一个location对象（地址对象）其中有个属性hash  浏览器中的锚点
+		    	// console.info(location.hash);
+		    	var boardid=location.hash.substring(1);
+		    	addTopic.href="topic.html#"+boardid
+		    	//ajax的远程调用  doGet方法或数据
+		    	var url="ListServlet?boardid="+boardid;
+		    	$.get(url,null,function(json){   //匿名函数  json---/ListServlet?boardid=5里面的数据
+		    			vue.$data.list=JSON.parse(json);  //将json字符串转成js对象(当前是数组) 最后赋值给vue的data中的list数组
+		    			console.info(vue.$data.list);
+		    	});
+		    }
+		});
+		</script>
+	</DIV>
+<!--            翻 页          -->
+	<DIV>
+		<a href="list.html">上一页</a>|
+		<a href="list.html">下一页</a>
+	</DIV>
+</DIV>
+<!--             声 明          -->
+<BR/>
+<CENTER class="gray">源辰信息</CENTER>
+</BODY>
+</HTML>

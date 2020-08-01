@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<TITLE>论坛--看贴</TITLE>
+<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<Link rel="stylesheet" type="text/css" href="style/style.css" />
+</HEAD>
+
+<BODY>
+<DIV>
+	<IMG src="image/logo.gif">
+</DIV>
+
+<!--      用户信息、登录、注册        -->
+<DIV class="h">
+    <span v-if="loginedUser !=''"> 欢迎{{loginedUser.uname}}</span>
+    <span v-else>您尚未　<a href="login.html">登录</a></span>
+	&nbsp;| &nbsp; <A href="reg.html">注册</A> |
+</DIV>
+<script type="text/javascript">
+var vue=new Vue({
+	el:".h",
+	data:{
+		loginedUser:""
+	},
+	//事件钩子函数 当创建好vue对象之后，立即执行的代码
+	created:function(){
+		var url="GetLoginedUserServlet";
+		$.post(url,null,function(data){
+			//获取登录的用户名
+			vue.$data.loginedUser=JSON.parse(data);
+		});
+	}
+});
+</script>
+
+<!--      主体        -->
+<DIV id="topic"><br/>
+	<!--      导航        -->
+<DIV>
+	&gt;&gt;<B><a href="index.html">论坛首页</a></B>&gt;&gt;
+	<B><a href="list.html">灌水乐园</a></B>
+</DIV>
+	<br/>
+	<!--      回复、新帖        -->
+	<DIV>
+		<A href="post.html"><IMG src="image/reply.gif"  border="0" id=td_post></A> 
+		<A href="post.html"><IMG src="image/post.gif"   border="0" id=td_post></A>
+	</DIV>
+	<!--         翻 页         -->
+	<DIV>
+		<a href="detail.html">上一页</a>|
+		<a href="detail.html">下一页</a>
+	</DIV>
+	<!--      本页主题的标题        -->
+	<DIV>
+		<TABLE cellSpacing="0" cellPadding="0" width="100%">
+			<TR>
+				<TH class="h">本页主题: 灌水</TH>
+			</TR>
+			<TR class="tr2">
+				<TD>&nbsp;</TD>
+			</TR>
+		</TABLE>
+	</DIV>
+	
+	<!--      主题        -->
+	
+	<DIV class="t" v-for=" t in list">
+		<TABLE style="BORDER-TOP-WIDTH: 0px; TABLE-LAYOUT: fixed" cellSpacing="0" cellPadding="0" width="100%">
+			<TR class="tr1">
+				<TH style="WIDTH: 20%">
+					<B>{{t.uname}}</B><BR/>
+					<image v-bind:src="'image/head/'+t.head"/><BR/>
+					注册:{{t.regtime}}<button @click="zan">赞({{zanCnt}})</button><BR/>
+				</TH>
+				<TH>
+					<H4>{{t.title}}{{t.cnt?'浏览量:'+t.cnt:''}}</H4>
+					<DIV>{{t.content}}</DIV>
+					<DIV class="tipad gray">
+						发表：[{{t.publishtime}}] &nbsp;
+						最后修改:[{{t.modifytime}}]
+					</DIV>
+				</TH>
+			</TR>
+		</TABLE>
+	</DIV>
+</DIV>
+<script type="text/javascript">
+var vue2=new Vue({
+	el:"#topic",
+	data:{
+		list:[],
+		zanCnt:0,
+		topicid:0
+	},
+	//事件钩子函数 当创建好vue对象之后，立即执行的代码
+	created:function(){
+	 this.topicid=location.hash.substring(1);
+		var url="DetailServlet";
+		var param={
+				topicid:this.topicid
+		}
+		$.post(url,param,function(data){
+			//data在后台是json格式
+			var list=JSON.parse(data);
+			vue2.$data.list=list;
+		});
+		$.post("CntZanServlet",param,(data)=>{
+			data=JSON.parse(data);
+			this.zanCnt=data.cnt;
+		});
+	},
+	methods:{
+		zan(){
+			var param={
+					topicid:this.topicid
+			}
+			$.post("AddZanServlet",param,(data)=>{
+				data=JSON.parse(data);
+				this.zanCnt=data.cnt;
+			});
+		}
+	}
+});
+</script>
+<!--      声明        -->
+<BR>
+<CENTER class="gray">源辰信息</CENTER>
+</BODY>
+</HTML>
+

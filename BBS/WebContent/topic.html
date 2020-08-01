@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>论坛--发表帖子</title>
+<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<Link rel="stylesheet" type="text/css" href="style/style.css" />
+</head>
+<body>
+	<div>
+		<img src="image/logo.gif">
+	</div>
+	<!-- 用户信息登录注册 -->
+	<div class="h">
+		您尚未  <a href="login.jsp">登录</a> &nbsp;| &nbsp;<A href="reg.jsp">注册</A>
+	</div>
+	<BR />
+	<!-- 导航 -->
+	<div>
+		&gt;&gt;<B><a href="index.jsp">论坛首页</a></B>
+	</div>
+	<!-- 用户登录表单 -->
+	<div class="t" style="MARGIN-TOP: 15px" align="center">
+		<form name="loginForm" action="" method="post">
+			<br/>标 题&nbsp;<INPUT v-model="title" class="input" tabIndex="1"
+				type="text" maxLength="20" size="35" name="uName"> 
+			<br/>内容&nbsp;<textarea v-model="content" class="input" tabIndex="2"style="width: 210px"></textarea>
+            <br/><INPUT @click="login()" class="btn" tabIndex="6" type="button"value="发表">
+		</form>
+	</div>
+<script type="text/javascript">
+ var vue=new Vue({
+	 el:".t",
+	 data:{
+		 title:"",
+		 content:""
+	 },
+	 methods:{
+		 login(){
+			 var url="AddTopicServlet";
+			 var boardid=location.hash.substring(1);
+			 var user={
+					 title:this.title,
+					 content:this.content,
+					 boardid:boardid
+			 };
+			 $.post(url,user,function(msg){
+				 alert(msg);
+				 if(msg=="发帖成功"){
+					 location.href="list.html#"+boardid;
+				 }
+			 });
+		 }
+	 }
+ });
+</script>
+</body>
+</html>
