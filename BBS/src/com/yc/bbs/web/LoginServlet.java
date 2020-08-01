@@ -32,6 +32,7 @@ public class LoginServlet extends HttpServlet {
 			response.getWriter().print("登录成功");
 		} else {
 			response.getWriter().print("用户名或密码错误");
+			response.getWriter().append("====这是夜泊的代码=====");
 		}
 	}
 
